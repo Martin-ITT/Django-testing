@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 import dj_database_url
 
+
+development = os.environ.get('DEVELOPMENT', False)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,10 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = ('SECRET_KEY', 'django-insecure-i_o3yqq0#d&%pet$qc08y7#1&ez%ab#d5y4vs5qa--kc3hqwdu')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = development
 
-# ALLOWED_HOSTS = ['martin-django-testing.herokuapp.com']
-ALLOWED_HOSTS = [os.environ.get('HEROKU_HOSTNAME')]
+if development:
+    ALLOWED_HOSTS = ['localhost']
+else:
+    ALLOWED_HOSTS = [os.environ.get('HEROKU_HOSTNAME')]
 
 
 # Application definition
@@ -77,16 +82,21 @@ WSGI_APPLICATION = 'django_testing.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+if development:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
-DATABASES = {
-    'default': dj_database_url.parse('postgres://isalldwbmbisim:958b86b892da7466cc01a6ddcc649ae48d0bd1377a429ca1079a3a0f67bfd1c8@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d9nnksupbjlrf')
-}
+# DATABASES = {
+#     'default': dj_database_url.parse('postgres://isalldwbmbisim:958b86b892da7466cc01a6ddcc649ae48d0bd1377a429ca1079a3a0f67bfd1c8@ec2-44-196-146-152.compute-1.amazonaws.com:5432/d9nnksupbjlrf')
+# }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
